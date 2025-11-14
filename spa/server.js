@@ -4,7 +4,11 @@ const http = require("http").createServer(app);
 const https = require("https");
 const io = require("socket.io")(http, {
     pingInterval: 10000, 
-    pingTimeout: 30000
+    pingTimeout: 30000,
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 2 * 60 * 1000,
+        skipMiddlewares: true,
+        }
     });
 const path = require("path");
 const jwt = require("jsonwebtoken");
@@ -170,7 +174,7 @@ io.on("connection", async function(socket) {
         });
     });
 
-    //handle chat messages
+//handle chat messages
     socket.on("CHAT", (chatData) => {
         console.log("chat message...");
         if (!chatData || !chatData.msg || typeof chatData.msg !== "string")
@@ -182,7 +186,12 @@ io.on("connection", async function(socket) {
             return;
         } else {
             if (user?.room) {
+                // ADDITION: Create a new timestamp in ISO format
+                const timestamp = new Date().toISOString(); 
+                
                 io.to(user.room).emit("CHAT", {
+                    // Inject the timestamp at the beginning of the object
+                    timestamp: timestamp, 
                     username: user.username,
                     id: chatData.msg_id,
                     msg: chatData.msg,
