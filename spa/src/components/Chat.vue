@@ -24,6 +24,7 @@
               {{ msg.username }}
               <sub class="inline" v-if="showXP">{{ msg.exp }}</sub> : 
               <span class="font-normal">{{ msg.msg }}</span>
+              <sup v-if="showTimestamps" class="timestamp-display"> [{{ formatTimestamp(msg.timestamp) }}]</sup>
             </span>
             <span 
               v-else-if="(msg.username === $store.data.user.username ||
@@ -281,6 +282,17 @@
           <input type="checkbox" id="speech" v-model="tts" />
           <label for="speech"> Text To Speech</label>
         </li>
+	<li v-show="menuToggleSpeech" 
+          class="
+            p-1
+            pl-3.5
+            hover:text-white 
+            hover:bg-gray-500
+            active:bg-gray-400
+          "
+          >
+          <input type="checkbox" title="Toggle Timestamps" v-model="showTimestamps" />
+          <label for="speech"> Timestamps</label>
         <li v-show="menuBeamTo" 
           class="
             p-1
@@ -432,6 +444,7 @@ export default Vue.extend({
   ],
   data: () => {
     return {
+      showTimestamps: true,
       message: "",
       messages: [],
       users: [],
@@ -504,6 +517,17 @@ export default Vue.extend({
     }
   },
   methods: {
+    formatTimestamp(isoString) {
+        if (!isoString) return '';
+        const timestamp = new Date().toISOString();
+        const date = new Date(isoString);
+        
+        // Use padStart to ensure two digits (e.g., 09 instead of 9)
+        const hours = String(date.getHours()).padStart(2, '0'); 
+        const minutes = String(date.getMinutes()).padStart(2, '0'); 
+        
+        return `${hours}:${minutes}`;
+    }
     handler: function(e) {
       this.userMenu = true;
       this.cursorX = e.x;
@@ -581,6 +605,7 @@ export default Vue.extend({
               });
             } else {
               this.$socket.emit("CHAT", {
+                timestamp: timestamp,
                 msg: this.message,
                 exp: this.xpAmount,
                 msg_id: msgID,
@@ -1266,4 +1291,6 @@ export default Vue.extend({
     }
   },
 });
+
 </script>
+
