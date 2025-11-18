@@ -4,7 +4,11 @@ const http = require("http").createServer(app);
 const https = require("https");
 const io = require("socket.io")(http, {
     pingInterval: 10000, 
-    pingTimeout: 30000
+    pingTimeout: 30000,
+    connectionStateRecovery: {
+	    maxDisconnectionDuration: 2 * 60 * 1000,
+        skipMiddlwares: true,
+    },
     });
 const path = require("path");
 const jwt = require("jsonwebtoken");
