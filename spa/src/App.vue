@@ -63,6 +63,11 @@
             </div>
             <div class="flex justify-center">
               <div class="menu">
+			  	<a href="#"
+				  class="menuLink"
+				  @click.prevent="openHowDoIModal"
+				  style="top: 58px"
+				  ></a>
                 <a href="#"
                   class="menuLink"
                   @click.prevent="openInfoModal"
@@ -137,6 +142,7 @@ import Vue from "vue";
 
 import WorldBrowserPage from "./pages/world-browser/WorldBrowserPage.vue";
 import ModalRoot from "./components/modals/ModalRoot.vue";
+import HowDoIModal from "./components/modals/HowDoIModal.vue";
 import InfoModal from "./components/modals/InfoModal.vue";
 import SecurityAlertModal from './components/modals/SecurityAlertModal.vue';
 import CitizenOnlineModal from './components/modals/CitizenOnlineModal.vue';
@@ -330,6 +336,9 @@ export default Vue.extend({
     },
     reloadWindow(): void {
       window.location.reload();
+    },
+    openHowDoIModal(): void {
+      ModalService.open(HowDoIModal);
     },
     openInfoModal(): void {
       ModalService.open(InfoModal);
